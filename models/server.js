@@ -4,22 +4,28 @@ const { dbConnection } = require('../database/config');
 class Server {
   constructor() {
     this.app = express();
-
     this.port = process.env.PORT;
 
+    // Database
     this.connectDB();
+
+    // Middlewares
+    this.middlewares();
+
+    // Routes
     this.routes();
   }
 
   async connectDB() {
-    
     await dbConnection();
   }
 
+  middlewares() {
+    this.app.use(express.json());
+  }
+
   routes() {
-    this.app.get('/', (req, res) => {
-      res.send('Hello World');
-    });
+    this.app.use('/user', require('../routes/user'));
   }
 
   start() {
