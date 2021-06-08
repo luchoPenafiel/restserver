@@ -19,7 +19,7 @@ router.post(
   '/signup',
   [
     check('name', 'name is required.').not().isEmpty(),
-    check('nameLast', 'nameLast is required.').not().isEmpty(),
+    check('lastName', 'lastName is required.').not().isEmpty(),
     check('password', 'password is required.').not().isEmpty(),
     check('email', 'email is required.').not().isEmpty(),
     check('email', 'Email not valid.').isEmail(),

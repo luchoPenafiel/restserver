@@ -1,9 +1,41 @@
 const { response } = require('express');
+const { JWTGenerator } = require('../helpers/JWTGenerator');
 const Usuario = require('../models/user');
 const bcrypt = require('bcryptjs');
 
-const signin = (req, res = response) => {
-  res.send('Login');
+const signin = async (req, res = response) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await Usuario.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({
+        error: 'User or password incorrect.',
+      });
+    }
+
+    const validPass = bcrypt.compareSync(password, user.password);
+
+    if (!validPass) {
+      return res.status(400).json({
+        error: 'User or password incorrect.',
+      });
+    }
+
+    console.log('==> signin', user._id);
+
+    const token = await JWTGenerator(user._id);
+
+    res.json({
+      user,
+      token,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error,
+    });
+  }
 };
 
 const signup = async (req, res = response) => {
@@ -26,7 +58,9 @@ const signup = async (req, res = response) => {
   // Save user
   await newUser.save();
 
-  res.json(newUser);
+  const token = await JWTGenerator(newUser._id);
+
+  res.json({ user: newUser, token });
 };
 
 const logout = (req, res = response) => {
