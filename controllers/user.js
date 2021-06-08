@@ -23,8 +23,6 @@ const signin = async (req, res = response) => {
       });
     }
 
-    console.log('==> signin', user._id);
-
     const token = await JWTGenerator(user._id);
 
     res.json({
